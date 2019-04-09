@@ -1,10 +1,9 @@
-package action
+package server
 
 import (
 	"io"
 	"net/http"
 
-	"github.com/go-chi/chi"
 	"github.com/kaminek/natasha_exporter/pkg/config"
 	"github.com/kaminek/natasha_exporter/pkg/exporter"
 	"github.com/kaminek/natasha_exporter/pkg/version"

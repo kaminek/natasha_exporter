@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"github.com/joho/godotenv"
-	"github.com/kaminek/natasha_exporter/pkg/action"
 	"github.com/kaminek/natasha_exporter/pkg/config"
+	"github.com/kaminek/natasha_exporter/pkg/server"
 	"github.com/kaminek/natasha_exporter/pkg/version"
 	"gopkg.in/urfave/cli.v2"
 )
@@ -68,7 +68,7 @@ func main() {
 		Action: func(c *cli.Context) error {
 			logger := setupLogger(cfg)
 
-			return action.Init(cfg)
+			return server.Init(cfg)
 		},
 	}
 
