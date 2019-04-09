@@ -87,8 +87,6 @@ func handler(cfg *config.Config, logger log.Logger) *chi.Mux {
 	mux := chi.NewRouter()
 
 	r := prometheus.NewRegistry()
-	// r.MustRegister(prometheus.NewProcessCollector(nil))
-	r.MustRegister(prometheus.NewGoCollector())
 
 	r.MustRegister(exporter.NewGeneralCollector(
 		version.Version,
