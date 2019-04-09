@@ -68,7 +68,7 @@ func main() {
 		Action: func(c *cli.Context) error {
 			logger := setupLogger(cfg)
 
-			return action.Server(cfg, logger)
+			return action.Init(cfg)
 		},
 	}
 
