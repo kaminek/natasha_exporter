@@ -1,13 +1,10 @@
 package server
 
 import (
-	"io"
 	"net/http"
 
 	"github.com/kaminek/natasha_exporter/pkg/config"
 	"github.com/kaminek/natasha_exporter/pkg/exporter"
-	"github.com/kaminek/natasha_exporter/pkg/version"
-	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/prometheus/common/log"
 	"github.com/prometheus/common/version"

@@ -6,8 +6,8 @@ import (
 
 	"github.com/joho/godotenv"
 	"github.com/kaminek/natasha_exporter/pkg/config"
+	"github.com/kaminek/natasha_exporter/pkg/info"
 	"github.com/kaminek/natasha_exporter/pkg/server"
-	"github.com/kaminek/natasha_exporter/pkg/version"
 	"gopkg.in/urfave/cli.v2"
 )
 
@@ -20,7 +20,7 @@ func main() {
 
 	app := &cli.App{
 		Name:    "Natasha_exporter",
-		Version: version.Version,
+		Version: info.Version,
 		Usage:   "Natasha Exporter",
 		Authors: []*cli.Author{
 			{
@@ -29,20 +29,6 @@ func main() {
 			},
 		},
 		Flags: []cli.Flag{
-			&cli.StringFlag{
-				Name:        "log.level",
-				Value:       "info",
-				Usage:       "Only log messages with given severity",
-				EnvVars:     []string{"NATASHA_EXPORTER_LOG_LEVEL"},
-				Destination: &cfg.Logs.Level,
-			},
-			&cli.BoolFlag{
-				Name:        "log.pretty",
-				Value:       false,
-				Usage:       "Enable pretty messages for logging",
-				EnvVars:     []string{"NATASHA_EXPORTER_LOG_PRETTY"},
-				Destination: &cfg.Logs.Pretty,
-			},
 			&cli.StringFlag{
 				Name:        "web.address",
 				Value:       "0.0.0.0:9507",
@@ -58,16 +44,14 @@ func main() {
 				Destination: &cfg.Server.Path,
 			},
 			&cli.DurationFlag{
-				Name:        "request.timeout",
+				Name:        "natasha.timeout",
 				Value:       5 * time.Second,
-				Usage:       "Request timeout as duration",
-				EnvVars:     []string{"NATASHA_EXPORTER_REQUEST_TIMEOUT"},
+				Usage:       "Target request timeout as duration",
+				EnvVars:     []string{"NATASHA_EXPORTER_TIMEOUT"},
 				Destination: &cfg.Target.Timeout,
 			},
 		},
 		Action: func(c *cli.Context) error {
-			logger := setupLogger(cfg)
-
 			return server.Init(cfg)
 		},
 	}

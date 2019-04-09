@@ -10,12 +10,6 @@ type Server struct {
 	Path string
 }
 
-// Logs defines the level and color for log configuration.
-type Logs struct {
-	Pretty bool
-	Level  string
-}
-
 // Target defines the target specific configuration.
 type Target struct {
 	Address string
@@ -25,7 +19,6 @@ type Target struct {
 // Config is a combination of all available configurations.
 type Config struct {
 	Server Server
-	Logs   Logs
 	Target Target
 }
 
