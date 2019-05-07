@@ -4,7 +4,7 @@ PACKAGES ?= $(shell go list ./... | grep -v /vendor/ | grep -v /_tools/)
 SOURCES ?= $(shell find . -name "*.go" -type f -not -path "./vendor/*" -not -path "./_tools/*")
 
 .PHONY: all
-all: dep build
+all: build
 
 .PHONY: clean
 clean:
@@ -31,7 +31,7 @@ install: $(SOURCES)
 	go install -v  ./cmd/$(NAME)
 
 .PHONY: build
-build: dep bin/$(EXECUTABLE)
+build: bin/$(EXECUTABLE)
 
 bin/$(EXECUTABLE): $(SOURCES)
 	go build -i -v  -o $@ ./cmd/$(NAME)
