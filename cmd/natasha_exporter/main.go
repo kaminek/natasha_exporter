@@ -6,6 +6,7 @@ import (
 
 	"github.com/joho/godotenv"
 	"github.com/kaminek/natasha_exporter/pkg/config"
+	"github.com/kaminek/natasha_exporter/pkg/exporter"
 	"github.com/kaminek/natasha_exporter/pkg/info"
 	"github.com/kaminek/natasha_exporter/pkg/server"
 	"gopkg.in/urfave/cli.v2"
@@ -52,6 +53,7 @@ func main() {
 			},
 		},
 		Action: func(c *cli.Context) error {
+			exporter.New(cfg)
 			return server.Init(cfg)
 		},
 	}

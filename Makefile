@@ -9,7 +9,7 @@ all: build
 .PHONY: clean
 clean:
 	go clean -i ./...
-	rm -rf bin/ $(DIST)/
+	rm -rf bin/
 
 .PHONY: fmt
 fmt:

@@ -21,39 +21,12 @@
   revision = "2efee857e7cfd4f3d0138cc3cbb1b4966962b93a"
 
 [[projects]]
-  branch = "master"
   digest = "1:d6afaeed1502aa28e80a4ed0981d570ad91b2579193404256ce672ed0a609e0d"
   name = "github.com/beorn7/perks"
   packages = ["quantile"]
   pruneopts = "UT"
-  revision = "3a771d992973f24aa725d07868b467d1ddfceafb"
-
-[[projects]]
-  digest = "1:1c70b4d7285f792bd387c1adac08825715147fa210b3d2826ffd2bf56be9455b"
-  name = "github.com/go-chi/chi"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "da24bba8dcd4021cafac38724bf10dccc97c3e36"
-  version = "v4.0.2"
-
-[[projects]]
-  digest = "1:ce058ca1b1787a997e578c4344f9650becb5086a3512332cbedffca9950d77a1"
-  name = "github.com/go-kit/kit"
-  packages = [
-    "log",
-    "log/level",
-  ]
-  pruneopts = "UT"
-  revision = "12210fb6ace19e0496167bb3e667dcd91fa9f69b"
-  version = "v0.8.0"
-
-[[projects]]
-  digest = "1:4062bc6de62d73e2be342243cf138cf499b34d558876db8d9430e2149388a4d8"
-  name = "github.com/go-logfmt/logfmt"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "07c9b44f60d7ffdfb7d8efe1ad539965737836dc"
-  version = "v0.4.0"
+  revision = "4b2b341e8d7715fae06375aa633dbb6e91b3fb46"
+  version = "v1.0.0"
 
 [[projects]]
   digest = "1:318f1c959a8a740366fce4b1e1eb2fd914036b4af58fbd0a003349b305f118ad"
@@ -72,20 +45,24 @@
   version = "v1.3.0"
 
 [[projects]]
+  branch = "master"
+  digest = "1:417c68f888b3476aeb105893e99969c77b95c9ae562adbff9418d945ef1c2e3d"
+  name = "github.com/kaminek/natasha-cli"
+  packages = [
+    "pkg/client",
+    "pkg/handlers",
+    "pkg/headers",
+  ]
+  pruneopts = "UT"
+  revision = "3d1dd59a44b5ba8c072b73395844b7418c6fb47c"
+
+[[projects]]
   digest = "1:31e761d97c76151dde79e9d28964a812c46efc5baee4085b86f68f0c654450de"
   name = "github.com/konsorten/go-windows-terminal-sequences"
   packages = ["."]
   pruneopts = "UT"
   revision = "f55edac94c9bbba5d6182a4be46d86a2c9b5b50e"
   version = "v1.0.2"
-
-[[projects]]
-  branch = "master"
-  digest = "1:a64e323dc06b73892e5bb5d040ced475c4645d456038333883f58934abbf6f72"
-  name = "github.com/kr/logfmt"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "b84e30acd515aadc4b783ad4ff83aff3299bdfe0"
 
 [[projects]]
   digest = "1:ff5ebae34cfbf047d505ee150de27e60570e8c394b3b8fdbb720ff6ac71985fc"
@@ -126,16 +103,19 @@
     "version",
   ]
   pruneopts = "UT"
-  revision = "cfeb6f9992ffa54aaa4f2170ade4067ee478b250"
-  version = "v0.2.0"
+  revision = "1ba88736f028e37bc17328369e94a537ae9e0234"
+  version = "v0.4.0"
 
 [[projects]]
   branch = "master"
-  digest = "1:f806b417865e83457c3659232926203f5b0d39aa741b71d9e3e4c0c774e71a5c"
+  digest = "1:9d62e12429921bbbdc2d1e3c81c6a2c128cc07046633ff92fb6d17376f74261d"
   name = "github.com/prometheus/procfs"
-  packages = ["."]
+  packages = [
+    ".",
+    "internal/fs",
+  ]
   pruneopts = "UT"
-  revision = "ea9eea63887261e4d8ed8315f4078e88d540c725"
+  revision = "5867b95ac084bbfee6ea16595c4e05ab009021da"
 
 [[projects]]
   digest = "1:fd61cf4ae1953d55df708acb6b91492d538f49c305b364a014049914495db426"
@@ -147,7 +127,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:92a74ff72684a27ac48e56ba5a29725e1f4bacf7dad7bfc2c24c19e25e075406"
+  digest = "1:b8dc161359a5f29fa41d1f5c37bb9548c18af7f28af36f9292cc139d9aaeb545"
   name = "golang.org/x/sys"
   packages = [
     "unix",
@@ -156,7 +136,7 @@
     "windows/svc/eventlog",
   ]
   pruneopts = "UT"
-  revision = "4b34438f7a67ee5f45cc6132e2bad873a20324e9"
+  revision = "a5b02f93d862f065920dd6a40dddc66b60d0dec4"
 
 [[projects]]
   digest = "1:c06d9e11d955af78ac3bbb26bd02e01d2f61f689e1a3bce2ef6fb683ef8a7f2d"
@@ -178,10 +158,9 @@
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
-    "github.com/go-chi/chi",
-    "github.com/go-kit/kit/log",
-    "github.com/go-kit/kit/log/level",
     "github.com/joho/godotenv",
+    "github.com/kaminek/natasha-cli/pkg/handlers",
+    "github.com/kaminek/natasha-cli/pkg/headers",
     "github.com/prometheus/client_golang/prometheus",
     "github.com/prometheus/client_golang/prometheus/promhttp",
     "github.com/prometheus/common/log",
