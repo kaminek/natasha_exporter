@@ -168,22 +168,32 @@ func scrape(ch chan<- prometheus.Metric) (up float64) {
 		return 0
 	}
 
+	var coreID uint8
 	appStats := headers.NatashaAppStats{}
-	cores := int(reply.DataSize) / int(unsafe.Sizeof(appStats))
-	recvBuf = make([]byte, unsafe.Sizeof(appStats))
-
+	cores := int(reply.DataSize) /
+		int(unsafe.Sizeof(appStats)+unsafe.Sizeof(coreID))
 	appMetrics := metrics.GetAppStatsMetrics()
 
 	for core := 0; core < cores; core++ {
+		// Get coreid
+		recvBuf = make([]byte, unsafe.Sizeof(coreID))
 		_, err := conn.Read(recvBuf)
 		if err != nil {
 			log.Fatal("Failed to read data", err)
 			return 0
 		}
+		// it's a uint8 same as one byte
+		coreID = recvBuf[0]
 
-		// Write byte stream to struct
+		// Get app stats for that core
+		recvBuf = make([]byte, unsafe.Sizeof(appStats))
+		_, err = conn.Read(recvBuf)
+		if err != nil {
+			log.Fatal("Failed to read data", err)
+			return 0
+		}
+
 		r := bytes.NewReader(recvBuf)
-
 		err = binary.Read(r, binary.BigEndian, &appStats)
 		if err != nil {
 			log.Fatal("Write to data structure error: ", err)
@@ -194,43 +204,43 @@ func scrape(ch chan<- prometheus.Metric) (up float64) {
 			appMetrics["DropNoRule"],
 			prometheus.GaugeValue,
 			float64(appStats.DropNoRule),
-			strconv.Itoa(core),
+			strconv.Itoa(int(coreID)),
 		)
 		ch <- prometheus.MustNewConstMetric(
 			appMetrics["DropNatCondition"],
 			prometheus.GaugeValue,
 			float64(appStats.DropNatCondition),
-			strconv.Itoa(core),
+			strconv.Itoa(int(coreID)),
 		)
 		ch <- prometheus.MustNewConstMetric(
 			appMetrics["DropBadL3Cksum"],
 			prometheus.GaugeValue,
 			float64(appStats.DropBadL3Cksum),
-			strconv.Itoa(core),
+			strconv.Itoa(int(coreID)),
 		)
 		ch <- prometheus.MustNewConstMetric(
 			appMetrics["RxBadL4Cksum"],
 			prometheus.GaugeValue,
 			float64(appStats.RxBadL4Cksum),
-			strconv.Itoa(core),
+			strconv.Itoa(int(coreID)),
 		)
 		ch <- prometheus.MustNewConstMetric(
 			appMetrics["DropUnknownIcmp"],
 			prometheus.GaugeValue,
 			float64(appStats.DropUnknownIcmp),
-			strconv.Itoa(core),
+			strconv.Itoa(int(coreID)),
 		)
 		ch <- prometheus.MustNewConstMetric(
 			appMetrics["DropUnhandledEthertype"],
 			prometheus.GaugeValue,
 			float64(appStats.DropUnhandledEthertype),
-			strconv.Itoa(core),
+			strconv.Itoa(int(coreID)),
 		)
 		ch <- prometheus.MustNewConstMetric(
 			appMetrics["DropTxNotsent"],
 			prometheus.GaugeValue,
 			float64(appStats.DropTxNotsent),
-			strconv.Itoa(core),
+			strconv.Itoa(int(coreID)),
 		)
 	}
 
