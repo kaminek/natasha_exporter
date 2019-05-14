@@ -12,6 +12,13 @@ const (
 var (
 	dpdkLabelNames = []string{"portid"}
 	appLabelNames  = []string{"coreid"}
+
+	// LastScrapeStatus describe the last scrape status
+	LastScrapeStatus = prometheus.NewDesc(
+		prometheus.BuildFQName(namespace, "", "last_scrape_status"),
+		"Was the last scrape successful.",
+		nil,
+		nil)
 )
 
 type metrics map[string]*prometheus.Desc

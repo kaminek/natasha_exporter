@@ -84,7 +84,7 @@ func NewExporter(timeout time.Duration) (*Exporter, error) {
 	}, nil
 }
 
-func scrape(ch chan<- prometheus.Metric) (up float64) {
+func scrape(ch chan<- prometheus.Metric) (status float64) {
 
 	conn, err := server.NatashaServerDial()
 	if err != nil {
@@ -254,6 +254,7 @@ func scrape(ch chan<- prometheus.Metric) (up float64) {
 func (e *Exporter) Describe(ch chan<- *prometheus.Desc) {
 	ch <- e.totalScrapes.Desc()
 	ch <- e.NatashaStatus
+	ch <- metrics.LastScrapeStatus
 	ch <- e.NatashaCollectorMetrics.BuildInfo
 
 	for _, m := range e.AppStatsMetrics {
@@ -272,8 +273,13 @@ func (e *Exporter) Collect(ch chan<- prometheus.Metric) {
 	defer e.mutex.Unlock()
 
 	e.totalScrapes.Inc()
-	scrape(ch)
+	status := scrape(ch)
+
 	ch <- e.totalScrapes
+	ch <- prometheus.MustNewConstMetric(
+		metrics.LastScrapeStatus,
+		prometheus.GaugeValue,
+		status)
 	ch <- prometheus.MustNewConstMetric(
 		e.NatashaCollectorMetrics.BuildInfo,
 		prometheus.GaugeValue,
