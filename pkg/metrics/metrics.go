@@ -34,10 +34,10 @@ func newAppStatsMetric(metricName string, docString string, constLabels promethe
 // GetDpdkStatsMetrics returns all metrics
 func GetDpdkStatsMetrics() map[string]*prometheus.Desc {
 	return metrics{
-		"Ipackets": newDpdkStatsMetric("ipackets", "The number of Rx packets.", nil),
-		"Opackets": newDpdkStatsMetric("opackets", "The number of Tx packets.", nil),
-		"Ibytes":   newDpdkStatsMetric("ibytes", "The number of Rx bytes.", nil),
-		"Obytes":   newDpdkStatsMetric("obytes", "The number of Tx bytes.", nil),
+		"Ipackets": newDpdkStatsMetric("ipackets", "Total number of successfully received packets.", nil),
+		"Opackets": newDpdkStatsMetric("opackets", "Total number of successfully transmitted packets.", nil),
+		"Ibytes":   newDpdkStatsMetric("ibytes", "Total number of successfully received bytes.", nil),
+		"Obytes":   newDpdkStatsMetric("obytes", "Total number of successfully transmitted bytes.", nil),
 		"Imissed":  newDpdkStatsMetric("imissed", "Total of RX packets dropped by the HW because there are no available buffer (i.e. RX queues are full).", nil),
 		"Ierrors":  newDpdkStatsMetric("ierrors", "Total number of erroneous received packets.", nil),
 		"Oerrors":  newDpdkStatsMetric("oerrors", "Total number of failed transmitted packets.", nil),
