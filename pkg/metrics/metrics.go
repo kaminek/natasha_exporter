@@ -38,6 +38,10 @@ func GetDpdkStatsMetrics() map[string]*prometheus.Desc {
 		"Opackets": newDpdkStatsMetric("opackets", "The number of Tx packets.", nil),
 		"Ibytes":   newDpdkStatsMetric("ibytes", "The number of Rx bytes.", nil),
 		"Obytes":   newDpdkStatsMetric("obytes", "The number of Tx bytes.", nil),
+		"Imissed":  newDpdkStatsMetric("imissed", "Total of RX packets dropped by the HW because there are no available buffer (i.e. RX queues are full).", nil),
+		"Ierrors":  newDpdkStatsMetric("ierrors", "Total number of erroneous received packets.", nil),
+		"Oerrors":  newDpdkStatsMetric("oerrors", "Total number of failed transmitted packets.", nil),
+		"RxNombuf": newDpdkStatsMetric("rxnombuf", "Total number of RX mbuf allocation failures.", nil),
 	}
 
 }

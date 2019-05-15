@@ -160,6 +160,30 @@ func scrape(ch chan<- prometheus.Metric) (status float64) {
 			float64(dpdkStats.Obytes),
 			strconv.Itoa(port),
 		)
+		ch <- prometheus.MustNewConstMetric(
+			dpdkMetrics["Imissed"],
+			prometheus.GaugeValue,
+			float64(dpdkStats.Imissed),
+			strconv.Itoa(port),
+		)
+		ch <- prometheus.MustNewConstMetric(
+			dpdkMetrics["Ierrors"],
+			prometheus.GaugeValue,
+			float64(dpdkStats.Ierrors),
+			strconv.Itoa(port),
+		)
+		ch <- prometheus.MustNewConstMetric(
+			dpdkMetrics["Oerrors"],
+			prometheus.GaugeValue,
+			float64(dpdkStats.Oerrors),
+			strconv.Itoa(port),
+		)
+		ch <- prometheus.MustNewConstMetric(
+			dpdkMetrics["RxNombuf"],
+			prometheus.GaugeValue,
+			float64(dpdkStats.RxNombuf),
+			strconv.Itoa(port),
+		)
 	}
 
 	err = handlers.SendCmd(conn, headers.NatashaCmdAppStats, &reply)
