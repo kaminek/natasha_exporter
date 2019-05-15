@@ -31,8 +31,11 @@ This project requires Go >= v1.8.
 go get -d github.com/kaminek/natasha_exporter
 cd $GOPATH/src/github.com/kaminek/natasha_exporter
 
+# get deps
+make dep
+
 # build binary
-make build
+make
 
 ./bin/natasha_exporter -h
 ```
