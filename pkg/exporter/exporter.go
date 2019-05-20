@@ -138,49 +138,49 @@ func scrape(ch chan<- prometheus.Metric) (status float64) {
 
 		ch <- prometheus.MustNewConstMetric(
 			dpdkMetrics["Ipackets"],
-			prometheus.GaugeValue,
+			prometheus.CounterValue,
 			float64(dpdkStats.Ipackets),
 			strconv.Itoa(port),
 		)
 		ch <- prometheus.MustNewConstMetric(
 			dpdkMetrics["Opackets"],
-			prometheus.GaugeValue,
+			prometheus.CounterValue,
 			float64(dpdkStats.Opackets),
 			strconv.Itoa(port),
 		)
 		ch <- prometheus.MustNewConstMetric(
 			dpdkMetrics["Ibytes"],
-			prometheus.GaugeValue,
+			prometheus.CounterValue,
 			float64(dpdkStats.Ibytes),
 			strconv.Itoa(port),
 		)
 		ch <- prometheus.MustNewConstMetric(
 			dpdkMetrics["Obytes"],
-			prometheus.GaugeValue,
+			prometheus.CounterValue,
 			float64(dpdkStats.Obytes),
 			strconv.Itoa(port),
 		)
 		ch <- prometheus.MustNewConstMetric(
 			dpdkMetrics["Imissed"],
-			prometheus.GaugeValue,
+			prometheus.CounterValue,
 			float64(dpdkStats.Imissed),
 			strconv.Itoa(port),
 		)
 		ch <- prometheus.MustNewConstMetric(
 			dpdkMetrics["Ierrors"],
-			prometheus.GaugeValue,
+			prometheus.CounterValue,
 			float64(dpdkStats.Ierrors),
 			strconv.Itoa(port),
 		)
 		ch <- prometheus.MustNewConstMetric(
 			dpdkMetrics["Oerrors"],
-			prometheus.GaugeValue,
+			prometheus.CounterValue,
 			float64(dpdkStats.Oerrors),
 			strconv.Itoa(port),
 		)
 		ch <- prometheus.MustNewConstMetric(
 			dpdkMetrics["RxNombuf"],
-			prometheus.GaugeValue,
+			prometheus.CounterValue,
 			float64(dpdkStats.RxNombuf),
 			strconv.Itoa(port),
 		)
@@ -226,43 +226,43 @@ func scrape(ch chan<- prometheus.Metric) (status float64) {
 
 		ch <- prometheus.MustNewConstMetric(
 			appMetrics["DropNoRule"],
-			prometheus.GaugeValue,
+			prometheus.CounterValue,
 			float64(appStats.DropNoRule),
 			strconv.Itoa(int(coreID)),
 		)
 		ch <- prometheus.MustNewConstMetric(
 			appMetrics["DropNatCondition"],
-			prometheus.GaugeValue,
+			prometheus.CounterValue,
 			float64(appStats.DropNatCondition),
 			strconv.Itoa(int(coreID)),
 		)
 		ch <- prometheus.MustNewConstMetric(
 			appMetrics["DropBadL3Cksum"],
-			prometheus.GaugeValue,
+			prometheus.CounterValue,
 			float64(appStats.DropBadL3Cksum),
 			strconv.Itoa(int(coreID)),
 		)
 		ch <- prometheus.MustNewConstMetric(
 			appMetrics["RxBadL4Cksum"],
-			prometheus.GaugeValue,
+			prometheus.CounterValue,
 			float64(appStats.RxBadL4Cksum),
 			strconv.Itoa(int(coreID)),
 		)
 		ch <- prometheus.MustNewConstMetric(
 			appMetrics["DropUnknownIcmp"],
-			prometheus.GaugeValue,
+			prometheus.CounterValue,
 			float64(appStats.DropUnknownIcmp),
 			strconv.Itoa(int(coreID)),
 		)
 		ch <- prometheus.MustNewConstMetric(
 			appMetrics["DropUnhandledEthertype"],
-			prometheus.GaugeValue,
+			prometheus.CounterValue,
 			float64(appStats.DropUnhandledEthertype),
 			strconv.Itoa(int(coreID)),
 		)
 		ch <- prometheus.MustNewConstMetric(
 			appMetrics["DropTxNotsent"],
-			prometheus.GaugeValue,
+			prometheus.CounterValue,
 			float64(appStats.DropTxNotsent),
 			strconv.Itoa(int(coreID)),
 		)
@@ -302,7 +302,7 @@ func (e *Exporter) Collect(ch chan<- prometheus.Metric) {
 	ch <- e.totalScrapes
 	ch <- prometheus.MustNewConstMetric(
 		metrics.LastScrapeStatus,
-		prometheus.GaugeValue,
+		prometheus.CounterValue,
 		status)
 	ch <- prometheus.MustNewConstMetric(
 		e.NatashaCollectorMetrics.BuildInfo,
