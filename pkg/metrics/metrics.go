@@ -59,3 +59,8 @@ func GetAppStatsMetrics() map[string]*prometheus.Desc {
 	}
 
 }
+
+// GetCPUUsageMetrics returns real cpu usage metric
+func GetCPUUsageMetrics() *prometheus.Desc {
+	return newAppStatsMetric("real_cpu_usage", "The real CPU usage.", nil)
+}

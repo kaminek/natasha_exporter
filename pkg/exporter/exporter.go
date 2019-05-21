@@ -3,6 +3,7 @@ package exporter
 import (
 	"bytes"
 	"encoding/binary"
+	"math"
 	"net"
 	"strconv"
 	"sync"
@@ -278,6 +279,78 @@ func scrapeAppStats(ch chan<- prometheus.Metric, conn net.Conn) error {
 	return nil
 }
 
+func scrapeCPUStat(ch chan<- prometheus.Metric, conn net.Conn) error {
+	var (
+		coreID uint8
+		cycles uint64
+		freq   uint64
+		usage  float64
+	)
+	reply := headers.NatashaCmdReply{}
+
+	err := handlers.SendCmd(conn, headers.NatashaCmdCpuUsage, &reply)
+	if err != nil {
+		log.Fatal("cpu-usage: ", err)
+		return err
+	}
+
+	cpuMetrics := metrics.GetCPUUsageMetrics()
+
+	cores := int(reply.DataSize) /
+		int(unsafe.Sizeof(cycles)+unsafe.Sizeof(freq)+unsafe.Sizeof(coreID))
+
+	for c := 0; c < cores; c++ {
+		// Get CPU id
+		recvBuf := make([]byte, unsafe.Sizeof(coreID))
+		_, err := conn.Read(recvBuf)
+		if err != nil {
+			log.Fatal("Failed to read data", err)
+			return err
+		}
+		// it's a uint8 same as one byte
+		coreID = recvBuf[0]
+
+		// Get cpu busy cycles
+		recvBuf = make([]byte, unsafe.Sizeof(cycles))
+		_, err = conn.Read(recvBuf)
+		if err != nil {
+			log.Fatal("Failed to read data", err)
+			return err
+		}
+
+		r := bytes.NewReader(recvBuf)
+		err = binary.Read(r, binary.BigEndian, &cycles)
+		if err != nil {
+			log.Fatal("Write to data structure error: ", err)
+			return err
+		}
+
+		// Get cpu frequency
+		_, err = conn.Read(recvBuf)
+		if err != nil {
+			log.Fatal("Failed to read data", err)
+			return err
+		}
+
+		r = bytes.NewReader(recvBuf)
+		err = binary.Read(r, binary.BigEndian, &freq)
+		if err != nil {
+			log.Fatal("Write to data structure error: ", err)
+			return err
+		}
+
+		usage = 100 * float64(cycles) / float64(freq)
+		ch <- prometheus.MustNewConstMetric(
+			cpuMetrics,
+			prometheus.GaugeValue,
+			float64(math.Round(usage*100)/100),
+			strconv.Itoa(int(coreID)),
+		)
+	}
+
+	return nil
+}
+
 func scrape(ch chan<- prometheus.Metric) (status float64) {
 
 	conn, err := server.NatashaServerDial()
@@ -297,6 +370,11 @@ func scrape(ch chan<- prometheus.Metric) (status float64) {
 	}
 
 	err = scrapeAppStats(ch, conn)
+	if err != nil {
+		return 0
+	}
+
+	err = scrapeCPUStat(ch, conn)
 	if err != nil {
 		return 0
 	}
