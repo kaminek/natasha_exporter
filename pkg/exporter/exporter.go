@@ -3,6 +3,7 @@ package exporter
 import (
 	"bytes"
 	"encoding/binary"
+	"net"
 	"strconv"
 	"sync"
 	"time"
@@ -84,39 +85,39 @@ func NewExporter(timeout time.Duration) (*Exporter, error) {
 	}, nil
 }
 
-func scrape(ch chan<- prometheus.Metric) (status float64) {
-
-	conn, err := server.NatashaServerDial()
-	if err != nil {
-		return 0
-	}
-
+func scrapeVersion(ch chan<- prometheus.Metric, conn net.Conn) error {
 	reply := headers.NatashaCmdReply{}
 
 	// get version
-	err = handlers.SendCmd(conn, headers.NatashaCmdVersion, &reply)
+	err := handlers.SendCmd(conn, headers.NatashaCmdVersion, &reply)
 	if err != nil {
 		log.Fatal("version: ", err)
-		return 0
+		return err
 	}
 
 	recvBuf := make([]byte, reply.DataSize)
 	_, err = conn.Read(recvBuf)
 	if err != nil {
 		log.Fatal("Connection error", err)
-		return 0
+		return err
 	}
 	// infos.version = recvBuf
 
-	err = handlers.SendCmd(conn, headers.NatashaCmdDpdkStats, &reply)
+	return nil
+}
+
+func scrapeDpdkStats(ch chan<- prometheus.Metric, conn net.Conn) error {
+	reply := headers.NatashaCmdReply{}
+
+	err := handlers.SendCmd(conn, headers.NatashaCmdDpdkStats, &reply)
 	if err != nil {
 		log.Fatal("dpdk-stats: ", err)
-		return 0
+		return err
 	}
 
 	dpdkStats := headers.NatashaEthStats{}
 	ports := int(reply.DataSize) / int(unsafe.Sizeof(dpdkStats))
-	recvBuf = make([]byte, unsafe.Sizeof(dpdkStats))
+	recvBuf := make([]byte, unsafe.Sizeof(dpdkStats))
 
 	dpdkMetrics := metrics.GetDpdkStatsMetrics()
 
@@ -124,7 +125,7 @@ func scrape(ch chan<- prometheus.Metric) (status float64) {
 		_, err = conn.Read(recvBuf)
 		if err != nil {
 			log.Fatal("Failed to read data", err)
-			return 0
+			return err
 		}
 
 		// Write byte stream to struct
@@ -133,7 +134,7 @@ func scrape(ch chan<- prometheus.Metric) (status float64) {
 		err = binary.Read(r, binary.BigEndian, &dpdkStats)
 		if err != nil {
 			log.Fatal("Write to data structure error: ", err)
-			return 0
+			return err
 		}
 
 		ch <- prometheus.MustNewConstMetric(
@@ -186,10 +187,16 @@ func scrape(ch chan<- prometheus.Metric) (status float64) {
 		)
 	}
 
-	err = handlers.SendCmd(conn, headers.NatashaCmdAppStats, &reply)
+	return nil
+}
+
+func scrapeAppStats(ch chan<- prometheus.Metric, conn net.Conn) error {
+	reply := headers.NatashaCmdReply{}
+
+	err := handlers.SendCmd(conn, headers.NatashaCmdAppStats, &reply)
 	if err != nil {
 		log.Fatal("app-stats: ", err)
-		return 0
+		return err
 	}
 
 	var coreID uint8
@@ -200,11 +207,11 @@ func scrape(ch chan<- prometheus.Metric) (status float64) {
 
 	for core := 0; core < cores; core++ {
 		// Get coreid
-		recvBuf = make([]byte, unsafe.Sizeof(coreID))
+		recvBuf := make([]byte, unsafe.Sizeof(coreID))
 		_, err := conn.Read(recvBuf)
 		if err != nil {
 			log.Fatal("Failed to read data", err)
-			return 0
+			return err
 		}
 		// it's a uint8 same as one byte
 		coreID = recvBuf[0]
@@ -214,14 +221,14 @@ func scrape(ch chan<- prometheus.Metric) (status float64) {
 		_, err = conn.Read(recvBuf)
 		if err != nil {
 			log.Fatal("Failed to read data", err)
-			return 0
+			return err
 		}
 
 		r := bytes.NewReader(recvBuf)
 		err = binary.Read(r, binary.BigEndian, &appStats)
 		if err != nil {
 			log.Fatal("Write to data structure error: ", err)
-			return 0
+			return err
 		}
 
 		ch <- prometheus.MustNewConstMetric(
@@ -268,7 +275,31 @@ func scrape(ch chan<- prometheus.Metric) (status float64) {
 		)
 	}
 
-	conn.Close()
+	return nil
+}
+
+func scrape(ch chan<- prometheus.Metric) (status float64) {
+
+	conn, err := server.NatashaServerDial()
+	if err != nil {
+		return 0
+	}
+	defer conn.Close()
+
+	err = scrapeVersion(ch, conn)
+	if err != nil {
+		return 0
+	}
+
+	err = scrapeDpdkStats(ch, conn)
+	if err != nil {
+		return 0
+	}
+
+	err = scrapeAppStats(ch, conn)
+	if err != nil {
+		return 0
+	}
 
 	return 1
 }
